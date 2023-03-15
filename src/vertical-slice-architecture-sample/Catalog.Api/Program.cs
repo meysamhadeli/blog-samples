@@ -20,7 +20,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.MapGetProductByIdEndpoint();
+app.MapCreateProductByIdEndpoint();
 
 app.UseHttpsRedirection();
 app.Run();

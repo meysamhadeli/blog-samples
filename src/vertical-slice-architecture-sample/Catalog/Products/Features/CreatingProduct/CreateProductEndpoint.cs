@@ -11,7 +11,7 @@ public static class CreateProductEndpoint
 {
     public record CreateProductRequestDto(string Name, string Description, decimal Price);
 
-    public static void MapGetProductByIdEndpoint(this IEndpointRouteBuilder endpoint)
+    public static void MapCreateProductByIdEndpoint(this IEndpointRouteBuilder endpoint)
     {
          endpoint
             .MapPost("api/catalog/products", CreateProduct)
