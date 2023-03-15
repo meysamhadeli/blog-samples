@@ -6,14 +6,15 @@ using Microsoft.AspNetCore.Routing;
 
 namespace Catalog.Products.Features.CreatingProduct;
 
-public static class GetProductByIdEndpoint
+// Post api/catalog/products
+public static class CreateProductEndpoint
 {
     public record CreateProductRequestDto(string Name, string Description, decimal Price);
 
     public static void MapGetProductByIdEndpoint(this IEndpointRouteBuilder endpoint)
     {
          endpoint
-            .MapPost("api/catalog/product", CreateProduct)
+            .MapPost("api/catalog/products", CreateProduct)
             .Produces<CreateProduct.CreateProductResult>()
             .WithName("CreateProduct");
     }
