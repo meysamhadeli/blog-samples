@@ -5,10 +5,10 @@ using MediatR;
 
 namespace Catalog.Products.Features.CreatingProduct;
 
-internal record CreateProduct(string Name, string Description, decimal Price) : IRequest<CreateProductResult>
+public record CreateProduct(string Name, string Description, decimal Price) : IRequest<CreateProductResult>
 {
     public Guid Id { get; init; } = Guid.NewGuid();
-};
+}
 
 internal record CreateProductResult(Guid Id, string Name, string Description, decimal Price);
 
