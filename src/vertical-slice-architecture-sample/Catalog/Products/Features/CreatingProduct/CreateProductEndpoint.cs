@@ -15,7 +15,7 @@ public static class CreateProductEndpoint
     {
          endpoint
             .MapPost("api/catalog/products", CreateProduct)
-            .Produces<CreateProduct.CreateProductResult>()
+            .Produces<CreateProductResult>()
             .WithName("CreateProduct");
     }
     
@@ -26,7 +26,7 @@ public static class CreateProductEndpoint
         CancellationToken cancellationToken
     )
     {
-        var command = mapper.Map<CreateProduct.CreateProductCommand>(request);
+        var command = mapper.Map<CreateProduct>(request);
 
         var queryResult = await mediator.Send(command, cancellationToken);
         

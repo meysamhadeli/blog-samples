@@ -5,37 +5,33 @@ using MediatR;
 
 namespace Catalog.Products.Features.CreatingProduct;
 
-public class CreateProduct
+internal record CreateProduct(string Name, string Description, decimal Price) : IRequest<CreateProductResult>
 {
-    public record CreateProductCommand(string Name, string Description, decimal Price) : IRequest<CreateProductResult>
+    public Guid Id { get; init; } = Guid.NewGuid();
+};
+
+internal record CreateProductResult(Guid Id, string Name, string Description, decimal Price);
+
+internal class Handler : IRequestHandler<CreateProduct, CreateProductResult>
+{
+    private readonly CatalogDbContext _catalogDbContext;
+    private readonly IMapper _mapper;
+
+    public Handler(CatalogDbContext catalogDbContext, IMapper mapper)
     {
-        public Guid Id { get; init; } = Guid.NewGuid();
-    };
+        _catalogDbContext = catalogDbContext;
+        _mapper = mapper;
+    }
 
-    public record CreateProductResult(Guid Id, string Name, string Description, decimal Price);
-    
-
-    public class Handler : IRequestHandler<CreateProductCommand, CreateProductResult>
+    public async Task<CreateProductResult> Handle(CreateProduct command, CancellationToken cancellationToken)
     {
-        private readonly CatalogDbContext _catalogDbContext;
-        private readonly IMapper _mapper;
+        var product = _mapper.Map<Product>(command);
 
-        public Handler(CatalogDbContext catalogDbContext, IMapper mapper)
-        {
-            _catalogDbContext = catalogDbContext;
-            _mapper = mapper;
-        }
+        var entityEntry = await _catalogDbContext.Products.AddAsync(product, cancellationToken);
+        await _catalogDbContext.SaveChangesAsync(cancellationToken);
 
-        public async Task<CreateProductResult> Handle(CreateProductCommand command, CancellationToken cancellationToken)
-        {
-            var product = _mapper.Map<Product>(command);
+        var createProductResult = _mapper.Map<CreateProductResult>(entityEntry.Entity);
 
-            var entityEntry = await _catalogDbContext.Products.AddAsync(product, cancellationToken);
-            await _catalogDbContext.SaveChangesAsync(cancellationToken);
-
-            var createProductResult = _mapper.Map<CreateProductResult>(entityEntry.Entity);
-
-            return createProductResult;
-        }
+        return createProductResult;
     }
 }
