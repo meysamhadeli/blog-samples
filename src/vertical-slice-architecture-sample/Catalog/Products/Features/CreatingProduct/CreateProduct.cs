@@ -10,7 +10,7 @@ public record CreateProduct(string Name, string Description, decimal Price) : IR
     public Guid Id { get; init; } = Guid.NewGuid();
 }
 
-internal record CreateProductResult(Guid Id, string Name, string Description, decimal Price);
+public record CreateProductResult(Guid Id, string Name, string Description, decimal Price);
 
 internal class Handler : IRequestHandler<CreateProduct, CreateProductResult>
 {
