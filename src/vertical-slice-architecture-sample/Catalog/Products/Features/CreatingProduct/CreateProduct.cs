@@ -10,7 +10,7 @@ public record CreateProduct(string Name, string Description, decimal Price) : IR
     public Guid Id { get; init; } = Guid.NewGuid();
 }
 
-public record CreateProductResult(Guid Id, string Name, string Description, decimal Price);
+public record CreateProductResult(Guid Id);
 
 internal class Handler : IRequestHandler<CreateProduct, CreateProductResult>
 {
@@ -27,11 +27,9 @@ internal class Handler : IRequestHandler<CreateProduct, CreateProductResult>
     {
         var product = _mapper.Map<Product>(command);
 
-        var entityEntry = await _catalogDbContext.Products.AddAsync(product, cancellationToken);
+        var entityEntry = (await _catalogDbContext.Products.AddAsync(product, cancellationToken)).Entity;
         await _catalogDbContext.SaveChangesAsync(cancellationToken);
-
-        var createProductResult = _mapper.Map<CreateProductResult>(entityEntry.Entity);
-
-        return createProductResult;
+        
+        return new CreateProductResult(entityEntry.Id);
     }
 }

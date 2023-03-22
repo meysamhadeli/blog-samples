@@ -10,12 +10,13 @@ namespace Catalog.Products.Features.CreatingProduct;
 public static class CreateProductEndpoint
 {
     public record CreateProductRequestDto(string Name, string Description, decimal Price);
+    public record CreateProductResponseDto(Guid Id);
 
     public static void MapCreateProductByIdEndpoint(this IEndpointRouteBuilder endpoint)
     {
          endpoint
             .MapPost("api/catalog/products", CreateProduct)
-            .Produces<CreateProductResult>()
+            .Produces<CreateProductResponseDto>()
             .WithName("CreateProduct");
     }
     
@@ -28,8 +29,10 @@ public static class CreateProductEndpoint
     {
         var command = mapper.Map<CreateProduct>(request);
 
-        var queryResult = await mediator.Send(command, cancellationToken);
+        var result = await mediator.Send(command, cancellationToken);
+
+        var response = new CreateProductResponseDto(result.Id);
         
-        return Results.Ok(queryResult);
+        return Results.Ok(response);
     }
 }
