@@ -28,20 +28,20 @@ app.UseExceptionHandler(exceptionHandlerApp =>
 
             if (exceptionType is not null)
             {
-                (string Detail, string Type, string Title, int StatusCode) details = exceptionType switch
+                (string Title, string Detail, string Type, int StatusCode) details = exceptionType switch
                 {
                     CustomException customException =>
                     (
-                        exceptionType.Message,
-                        exceptionType.GetType().ToString(),
                         exceptionType.GetType().Name,
+                        exceptionType.Message,
+                        "https://www.rfc-editor.org/rfc/rfc7231#section-6.5.1",
                         context.Response.StatusCode = (int)customException.StatusCode
                     ),
                     _ =>
                     (
-                        exceptionType.Message,
-                        exceptionType.GetType().ToString(),
                         exceptionType.GetType().Name,
+                        exceptionType.Message,
+                        "https://www.rfc-editor.org/rfc/rfc7231#section-6.6.1",
                         context.Response.StatusCode = StatusCodes.Status500InternalServerError
                     )
                 };
