@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Diagnostics;
-using WebApp;
+using problem.details.sample;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,11 +9,7 @@ builder.Services.AddProblemDetails();
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseStatusCodePages();
 
 app.UseExceptionHandler(exceptionHandlerApp =>
 {
@@ -28,20 +24,18 @@ app.UseExceptionHandler(exceptionHandlerApp =>
 
             if (exceptionType is not null)
             {
-                (string Title, string Detail, string Type, int StatusCode) details = exceptionType switch
+                (string Title, string Detail, int StatusCode) details = exceptionType switch
                 {
                     CustomException customException =>
                     (
                         exceptionType.GetType().Name,
                         exceptionType.Message,
-                        "https://www.rfc-editor.org/rfc/rfc7231#section-6.5.1",
                         context.Response.StatusCode = (int)customException.StatusCode
                     ),
                     _ =>
                     (
                         exceptionType.GetType().Name,
                         exceptionType.Message,
-                        "https://www.rfc-editor.org/rfc/rfc7231#section-6.6.1",
                         context.Response.StatusCode = StatusCodes.Status500InternalServerError
                     )
                 };
@@ -53,7 +47,6 @@ app.UseExceptionHandler(exceptionHandlerApp =>
                     {
                         Title = details.Title,
                         Detail = details.Detail,
-                        Type = details.Type,
                         Status = details.StatusCode
                     }
                 });
@@ -61,6 +54,13 @@ app.UseExceptionHandler(exceptionHandlerApp =>
         }
     });
 });
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+    app.UseDeveloperExceptionPage();
+}
 
 app.MapControllers();
 

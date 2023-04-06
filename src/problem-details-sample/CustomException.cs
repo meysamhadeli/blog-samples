@@ -1,6 +1,6 @@
 ﻿using System.Net;
 
-namespace WebApp;
+namespace problem.details.sample;
 
 public class CustomException : Exception
 {

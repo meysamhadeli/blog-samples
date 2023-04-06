@@ -1,4 +1,4 @@
-﻿namespace WebApp;
+﻿namespace problem.details.sample;
 
 public class ErrorFeature
 {

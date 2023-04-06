@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using WebApp;
+
+namespace problem.details.sample.Controllers;
 
 [Route("api/[controller]/[action]")]
 [ApiController]
