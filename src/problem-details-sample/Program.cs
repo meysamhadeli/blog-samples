@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Diagnostics;
 using problem.details.sample;
 
 var builder = WebApplication.CreateBuilder(args);
+var env = builder.Environment;
 
 builder.Services.AddControllers();
 builder.Services.AddSwaggerGen();
@@ -19,7 +20,6 @@ app.UseExceptionHandler(exceptionHandlerApp =>
 
         if (context.RequestServices.GetService<IProblemDetailsService>() is { } problemDetailsService)
         {
-            var env = context.RequestServices.GetRequiredService<IWebHostEnvironment>();
             var exceptionHandlerFeature = context.Features.Get<IExceptionHandlerFeature>();
             var exceptionType = exceptionHandlerFeature?.Error;
 
