@@ -19,6 +19,7 @@ app.UseExceptionHandler(exceptionHandlerApp =>
 
         if (context.RequestServices.GetService<IProblemDetailsService>() is { } problemDetailsService)
         {
+            var env = context.RequestServices.GetRequiredService<IWebHostEnvironment>();
             var exceptionHandlerFeature = context.Features.Get<IExceptionHandlerFeature>();
             var exceptionType = exceptionHandlerFeature?.Error;
 
@@ -40,7 +41,7 @@ app.UseExceptionHandler(exceptionHandlerApp =>
                     )
                 };
 
-                await problemDetailsService.WriteAsync(new ProblemDetailsContext
+                var problem = new ProblemDetailsContext
                 {
                     HttpContext = context,
                     ProblemDetails =
@@ -49,7 +50,14 @@ app.UseExceptionHandler(exceptionHandlerApp =>
                         Detail = details.Detail,
                         Status = details.StatusCode
                     }
-                });
+                };
+
+                if (env.IsDevelopment())
+                {
+                    problem.ProblemDetails.Extensions.Add("exception", exceptionHandlerFeature?.Error.ToString());
+                }
+
+                await problemDetailsService.WriteAsync(problem);
             }
         }
     });
@@ -59,7 +67,6 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-    app.UseDeveloperExceptionPage();
 }
 
 app.MapControllers();
