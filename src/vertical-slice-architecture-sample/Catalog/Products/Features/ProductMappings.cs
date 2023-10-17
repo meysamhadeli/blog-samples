@@ -8,7 +8,7 @@ public class ProductMappings: Profile
 {
     public ProductMappings()
     {
-        CreateMap<CreateProductEndpoint.CreateProductRequestDto, CreateProduct>();
+        CreateMap<CreateProductRequestDto, CreateProduct>();
         CreateMap<CreateProduct, Product>();
         CreateMap<Product, CreateProductResult>();
     }
