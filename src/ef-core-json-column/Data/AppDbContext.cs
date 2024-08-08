@@ -5,10 +5,6 @@ namespace ef.core.json.column.Data;
 
 public sealed class AppDbContext : DbContext
 {
-    public AppDbContext()
-    {
-        
-    }
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
     }
@@ -23,7 +19,7 @@ public sealed class AppDbContext : DbContext
             b.Property(x => x.Name).IsRequired();
             b.OwnsMany(x => x.SupplierInformations, ownedNavigationBuilder =>
             {
-                ownedNavigationBuilder.ToJson();
+                ownedNavigationBuilder.ToJson(); // Stores the collection as a JSON column
                 ownedNavigationBuilder.OwnsOne(s => s.Address); // Configure the owned type Address
             });
         });
