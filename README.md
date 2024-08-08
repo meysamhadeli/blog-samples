@@ -1,2 +1,2 @@
 # blog-samples
-You can find related blog here: https://meysamhadeli.com
+You can find related blog here: https://dotnetuniversity.com
