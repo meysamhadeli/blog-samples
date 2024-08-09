@@ -1,6 +1,5 @@
 using ef.core.json.column.Models;
 using ef.core.json.column.Models.ValueObjects;
-using Microsoft.EntityFrameworkCore;
 
 namespace ef.core.json.column.Data;
 
@@ -63,7 +62,5 @@ public class DataSeeder
             context.AddRange(products);
             context.SaveChanges();
         }
-
-        context.Database.Migrate();
     }
 }

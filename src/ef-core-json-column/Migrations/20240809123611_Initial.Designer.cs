@@ -11,7 +11,7 @@ using ef.core.json.column.Data;
 namespace ef.core.json.column.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240808192204_Initial")]
+    [Migration("20240809123611_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
