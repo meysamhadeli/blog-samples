@@ -1,4 +1,4 @@
-using HybridCacheSample.Endpoints;
+using HybridCacheSample;
 using Microsoft.Extensions.Caching.Hybrid;
 using HybridCacheSample.Services;
 
@@ -22,10 +22,28 @@ builder.Services.AddStackExchangeRedisCache(options =>
 
 // Register the UserService
 builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<ProductService>();
+
+// Add Swagger
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new() { Title = "HybridCache Demo API", Version = "v1" });
+});
 
 var app = builder.Build();
 
+// Enable Swagger UI in development environment
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "HybridCache Demo API v1");
+    });
+}
+
 // Map endpoints
-app.MapUserEndpoints();
+app.MapEndpoints();
 
 app.Run();
