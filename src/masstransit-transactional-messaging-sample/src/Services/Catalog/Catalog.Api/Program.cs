@@ -1,35 +1,52 @@
 using Catalog;
 using Catalog.Data;
 using Contracts;
-using Wolverine;
-using Wolverine.Kafka;
-using Wolverine.RabbitMQ;
+using MassTransit;
 
 var builder = WebApplication.CreateBuilder(args);
 var messaging = builder.Configuration.GetSection("Messaging").Get<MessagingOptions>() ?? new MessagingOptions();
 var transport = MessagingTransport.Normalize(messaging.Transport);
 
-builder.Host.UseWolverine(opts =>
-{
-    switch (transport)
-    {
-        case MessagingTransport.RabbitMq:
-            opts.UseRabbitMq(new Uri("amqp://guest:guest@localhost:5672"));
-            opts.PublishMessage<MessageEnvelope<ProductCreatedV1>>().ToRabbitQueue("catalog-products-created");
-            break;
-
-        case MessagingTransport.Kafka:
-            opts.UseKafka("localhost:9092").AutoProvision();
-            opts.PublishMessage<MessageEnvelope<ProductCreatedV1>>().ToKafkaTopic("catalog-products-created");
-            break;
-    }
-});
-
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSingleton<CatalogWriteStore>();
 builder.Services.AddSingleton<CatalogReadStore>();
-builder.Services.AddScoped<CatalogService>();
 builder.Services.AddSingleton(new MessagingOptions { Transport = transport });
+builder.Services.AddMassTransit(x =>
+{
+    x.SetKebabCaseEndpointNameFormatter();
+
+    switch (transport)
+    {
+        case MessagingTransport.RabbitMq:
+            x.UsingRabbitMq((context, cfg) =>
+            {
+                cfg.Host("localhost", "/", h =>
+                {
+                    h.Username("guest");
+                    h.Password("guest");
+                });
+                cfg.ConfigureEndpoints(context);
+            });
+            break;
+        case MessagingTransport.Kafka:
+            x.UsingInMemory((context, cfg) =>
+            {
+                cfg.ConfigureEndpoints(context);
+            });
+
+            x.AddRider(rider =>
+            {
+                rider.AddProducer<MessageEnvelope<ProductCreatedV1>>("catalog-products-created");
+
+                rider.UsingKafka((context, k) =>
+                {
+                    k.Host("localhost:9092");
+                });
+            });
+            break;
+    }
+});
+builder.Services.AddScoped<CatalogService>();
 
 var app = builder.Build();
 

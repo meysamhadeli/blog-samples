@@ -6,5 +6,6 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Shared\Contracts\Contracts.csproj" />
+    <PackageReference Include="WolverineFx" Version="6.19.0" />
   </ItemGroup>
 </Project>

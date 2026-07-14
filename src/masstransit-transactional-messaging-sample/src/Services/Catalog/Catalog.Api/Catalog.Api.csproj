@@ -6,8 +6,10 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\Catalog\Catalog.csproj" />
-    <PackageReference Include="WolverineFx" Version="6.19.0" />
-    <PackageReference Include="WolverineFx.Kafka" Version="6.19.0" />
-    <PackageReference Include="WolverineFx.RabbitMQ" Version="6.19.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="MassTransit" Version="8.3.6" />
+    <PackageReference Include="MassTransit.Kafka" Version="8.3.6" />
+    <PackageReference Include="MassTransit.RabbitMQ" Version="8.3.6" />
   </ItemGroup>
 </Project>

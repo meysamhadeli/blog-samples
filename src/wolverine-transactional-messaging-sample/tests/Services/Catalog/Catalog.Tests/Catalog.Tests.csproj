@@ -8,6 +8,8 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\Shared\Tests.Shared\Tests.Shared.csproj" />
     <ProjectReference Include="..\..\..\..\src\Services\Catalog\Catalog\Catalog.csproj" />
+    <ProjectReference Include="..\..\..\..\src\Services\Order\Order\Order.csproj" />
+    <ProjectReference Include="..\..\..\..\src\Shared\Contracts\Contracts.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="xunit" Version="2.9.2" />
@@ -15,6 +17,9 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
+    <PackageReference Include="WolverineFx" Version="6.19.0" />
+    <PackageReference Include="WolverineFx.RuntimeCompilation" Version="6.19.0" />
   </ItemGroup>
 </Project>

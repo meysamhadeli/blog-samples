@@ -1,10 +1,11 @@
 using Contracts;
+using MassTransit;
 using Order.Data;
 using Order.Models;
 
 namespace Order;
 
-public sealed class OrderImportService
+public sealed class OrderImportService : IConsumer<MessageEnvelope<ProductCreatedV1>>
 {
     private readonly OrderImportStore _importStore;
     private readonly InboxStore _inboxStore;
@@ -39,12 +40,8 @@ public sealed class OrderImportService
         return _importStore.FindAsync(id, cancellationToken);
     }
 
-}
-
-public static class ProductCreatedHandler
-{
-    public static Task Handle(MessageEnvelope<ProductCreatedV1> message, OrderImportService service, CancellationToken cancellationToken)
+    public Task Consume(ConsumeContext<MessageEnvelope<ProductCreatedV1>> context)
     {
-        return service.ImportAsync(message, cancellationToken);
+        return ImportAsync(context.Message, context.CancellationToken);
     }
 }

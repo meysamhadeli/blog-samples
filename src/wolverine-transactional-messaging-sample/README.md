@@ -4,10 +4,10 @@ This sample shows a small e-commerce system built with Wolverine, .NET Aspire, P
 
 ## What the sample demonstrates
 
-- transactional outbox style publishing from `Catalog`
-- durable inbox style duplicate protection in `Order`
-- durable local processing for MongoDB read-model projection
-- transport switching through configuration without changing application code
+- Wolverine publish/consume flow between `Catalog` and `Order`
+- inbox-style duplicate protection in `Order`
+- local processing for MongoDB read-model projection
+- transport switching through configuration with explicit RabbitMQ and Kafka wiring in the APIs
 
 ## Transport selection
 
@@ -52,7 +52,7 @@ dotnet test tests/Services/Catalog/Catalog.Tests/Catalog.Tests.csproj
 dotnet test tests/Services/Order/Order.Tests/Order.Tests.csproj
 ```
 
-The current tests explicitly cover both supported broker values, `rabbitmq` and `kafka`, so transport-related configuration changes should keep passing for both.
+The current tests explicitly cover both supported broker values, `rabbitmq` and `kafka`, including normalization and rejection of unsupported values. The integration tests cover Wolverine publish/consume behavior with an in-memory bus and keep the API startup wiring aligned with RabbitMQ and Kafka.
 
 ## Sample code
 

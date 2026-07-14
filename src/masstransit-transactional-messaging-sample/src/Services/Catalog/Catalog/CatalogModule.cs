@@ -1,7 +1,7 @@
 using Catalog.Data;
 using Catalog.Models;
 using Contracts;
-using Wolverine;
+using MassTransit;
 
 namespace Catalog;
 
@@ -9,13 +9,13 @@ public sealed class CatalogService
 {
     private readonly CatalogWriteStore _writeStore;
     private readonly CatalogReadStore _readStore;
-    private readonly IMessageBus _messageBus;
+    private readonly IPublishEndpoint _publishEndpoint;
 
-    public CatalogService(CatalogWriteStore writeStore, CatalogReadStore readStore, IMessageBus messageBus)
+    public CatalogService(CatalogWriteStore writeStore, CatalogReadStore readStore, IPublishEndpoint publishEndpoint)
     {
         _writeStore = writeStore;
         _readStore = readStore;
-        _messageBus = messageBus;
+        _publishEndpoint = publishEndpoint;
     }
 
     public async Task<CreateProductResult> CreateProductAsync(CreateProductRequest request, CancellationToken cancellationToken = default)
@@ -34,8 +34,9 @@ public sealed class CatalogService
             new ProductCreatedV1(product.Id, product.Name, product.Price, product.Stock),
             request.CorrelationId);
 
+        await _publishEndpoint.Publish(integrationEvent, cancellationToken);
+
         await ProjectReadModelAsync(new ProjectProductReadModel(product.Id), cancellationToken);
-        await _messageBus.PublishAsync(integrationEvent);
 
         return new CreateProductResult(product.Id, integrationEvent);
     }

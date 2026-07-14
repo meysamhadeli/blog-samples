@@ -1,15 +1,37 @@
 using Contracts;
 using Order;
 using Order.Data;
+using Wolverine;
+using Wolverine.Kafka;
+using Wolverine.RabbitMQ;
 
 var builder = WebApplication.CreateBuilder(args);
 var messaging = builder.Configuration.GetSection("Messaging").Get<MessagingOptions>() ?? new MessagingOptions();
+var transport = MessagingTransport.Normalize(messaging.Transport);
+
+builder.Host.UseWolverine(opts =>
+{
+    opts.Discovery.IncludeAssembly(typeof(OrderImportService).Assembly);
+
+    switch (transport)
+    {
+        case MessagingTransport.RabbitMq:
+            opts.UseRabbitMq(new Uri("amqp://guest:guest@localhost:5672"));
+            opts.ListenToRabbitQueue("catalog-products-created").UseDurableInbox();
+            break;
+
+        case MessagingTransport.Kafka:
+            opts.UseKafka("localhost:9092").AutoProvision();
+            opts.ListenToKafkaTopic("catalog-products-created").UseDurableInbox();
+            break;
+    }
+});
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSingleton<OrderImportStore>();
 builder.Services.AddSingleton<InboxStore>();
-builder.Services.AddSingleton<OrderImportService>();
-builder.Services.AddSingleton(messaging);
+builder.Services.AddScoped<OrderImportService>();
+builder.Services.AddSingleton(new MessagingOptions { Transport = transport });
 
 var app = builder.Build();
 
