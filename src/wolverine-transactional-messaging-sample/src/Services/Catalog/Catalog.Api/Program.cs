@@ -1,12 +1,15 @@
 using Catalog;
 using Catalog.Data;
+using Contracts;
 
 var builder = WebApplication.CreateBuilder(args);
+var messaging = builder.Configuration.GetSection("Messaging").Get<MessagingOptions>() ?? new MessagingOptions();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSingleton<CatalogWriteStore>();
 builder.Services.AddSingleton<CatalogReadStore>();
 builder.Services.AddSingleton<CatalogService>();
+builder.Services.AddSingleton(messaging);
 
 var app = builder.Build();
 

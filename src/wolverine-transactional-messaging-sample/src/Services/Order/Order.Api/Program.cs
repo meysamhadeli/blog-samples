@@ -3,11 +3,13 @@ using Order;
 using Order.Data;
 
 var builder = WebApplication.CreateBuilder(args);
+var messaging = builder.Configuration.GetSection("Messaging").Get<MessagingOptions>() ?? new MessagingOptions();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSingleton<OrderImportStore>();
 builder.Services.AddSingleton<InboxStore>();
 builder.Services.AddSingleton<OrderImportService>();
+builder.Services.AddSingleton(messaging);
 
 var app = builder.Build();
 

@@ -19,3 +19,8 @@ public sealed record MessageEnvelope<T>(
 public sealed record ProductCreatedV1(Guid ProductId, string Name, decimal Price, int Stock);
 
 public sealed record ProjectProductReadModel(Guid ProductId);
+
+public sealed record MessagingOptions
+{
+    public string Transport { get; init; } = "rabbitmq";
+}

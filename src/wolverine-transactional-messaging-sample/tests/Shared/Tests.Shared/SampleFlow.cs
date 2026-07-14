@@ -8,13 +8,13 @@ namespace Tests.Shared;
 
 public sealed class SampleFlow
 {
-    public async Task<FlowResult> RunAsync(CancellationToken cancellationToken = default)
+    public async Task<FlowResult> RunAsync(string transport = "rabbitmq", CancellationToken cancellationToken = default)
     {
         var catalogService = new CatalogService(new CatalogWriteStore(), new CatalogReadStore());
         var orderService = new OrderImportService(new OrderImportStore(), new InboxStore());
 
         var createResult = await catalogService.CreateProductAsync(
-            new CreateProductRequest("Mechanical Keyboard", 149.99m, 10, "catalog-flow"),
+            new CreateProductRequest("Mechanical Keyboard", 149.99m, 10, $"catalog-flow-{transport}"),
             cancellationToken);
 
         var imported = await orderService.ImportAsync(createResult.IntegrationEvent, cancellationToken);
@@ -22,11 +22,12 @@ public sealed class SampleFlow
         var readModel = await catalogService.GetReadModelAsync(createResult.ProductId, cancellationToken);
         var orderProduct = await orderService.GetProductAsync(createResult.ProductId, cancellationToken);
 
-        return new FlowResult(createResult, imported, writeModel, readModel, orderProduct);
+        return new FlowResult(transport, createResult, imported, writeModel, readModel, orderProduct);
     }
 }
 
 public sealed record FlowResult(
+    string Transport,
     CreateProductResult CreateResult,
     bool Imported,
     object? WriteModel,
