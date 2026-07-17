@@ -1,0 +1,35 @@
+apiVersion: 1
+datasources:
+  - name: Prometheus
+    type: prometheus
+    access: proxy
+    url: http://prometheus:9090
+    isDefault: true
+    editable: false
+    uid: prometheus-uid
+
+  - name: Tempo
+    type: tempo
+    access: proxy
+    url: http://tempo:3200
+    editable: false
+    uid: tempo-uid
+    jsonData:
+      httpMethod: GET
+      serviceMap:
+        datasourceUid: prometheus-uid
+      streamingEnabled:
+        search: true
+
+  - name: Loki
+    type: loki
+    access: proxy
+    url: http://loki:3100
+    editable: false
+    uid: loki-uid
+    jsonData:
+      derivedFields:
+        - datasourceUid: tempo-uid
+          matcherRegex: "^.*?traceId=(\\w+).*$"
+          name: traceId
+          url: '$${__value.raw}'

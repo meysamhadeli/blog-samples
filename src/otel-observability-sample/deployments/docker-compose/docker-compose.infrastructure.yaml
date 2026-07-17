@@ -1,0 +1,196 @@
+name: otel-observability-stack
+services:
+  #######################################################
+  #  Database: PostgreSQL (Catalog + Order)
+  #######################################################
+  postgres:
+    image: postgres:16
+    container_name: postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_MULTIPLE_DATABASES=catalogdb,orderdb
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./../configs/init-db.sh:/docker-entrypoint-initdb.d/init-db.sh
+    networks:
+      - infrastructure
+
+  #######################################################
+  #  App Services: Catalog API
+  #######################################################
+  catalog-api:
+    build:
+      context: ../../
+      dockerfile: Catalog.Api/Dockerfile
+    container_name: catalog-api
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:5000
+      - ConnectionStrings__CatalogDb=Host=postgres;Port=5432;Database=catalogdb;Username=postgres;Password=postgres
+      - OpenTelemetry__OtlpExporter__Endpoint=http://otel-collector:4317
+    depends_on:
+      - postgres
+      - otel-collector
+    networks:
+      - infrastructure
+
+  #######################################################
+  #  App Services: Order API
+  #######################################################
+  order-api:
+    build:
+      context: ../../
+      dockerfile: Order.Api/Dockerfile
+    container_name: order-api
+    restart: unless-stopped
+    ports:
+      - "5002:5002"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:5002
+      - ConnectionStrings__OrderDb=Host=postgres;Port=5432;Database=orderdb;Username=postgres;Password=postgres
+      - OpenTelemetry__OtlpExporter__Endpoint=http://otel-collector:4317
+    depends_on:
+      - postgres
+      - otel-collector
+    networks:
+      - infrastructure
+
+  #######################################################
+  #######################################################
+  #  Observability: OpenTelemetry Collector
+  #######################################################
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.116.1
+    container_name: otel-collector
+    restart: unless-stopped
+    command: ['--config=/etc/otelcol-contrib/config.yaml']
+    volumes:
+      - ./../configs/otel-collector-config.yaml:/etc/otelcol-contrib/config.yaml
+    ports:
+      - "4317:4317"
+      - "4318:4318"
+      - "8888:8888"
+      - "8889:8889"
+      - "13133:13133"
+    networks:
+      - infrastructure
+
+  #######################################################
+  #  Observability: Metrics (Prometheus)
+  #######################################################
+  prometheus:
+    image: prom/prometheus:v3.1.0
+    container_name: prometheus
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./../configs/prometheus.yaml:/etc/prometheus/prometheus.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.enable-remote-write-receiver'
+      - '--log.level=info'
+    networks:
+      - infrastructure
+
+  #######################################################
+  #  Observability: Traces (Tempo)
+  #######################################################
+  tempo:
+    image: grafana/tempo:2.7.0
+    container_name: tempo
+    restart: unless-stopped
+    command: ['-config.file=/etc/tempo.yaml']
+    volumes:
+      - ./../configs/tempo.yaml:/etc/tempo.yaml
+    ports:
+      - "3200:3200"
+    networks:
+      - infrastructure
+
+  #######################################################
+  #  Observability: Logs (Loki)
+  #######################################################
+  loki:
+    image: grafana/loki:3.3.2
+    container_name: loki
+    restart: unless-stopped
+    command: -config.file=/etc/loki/local-config.yaml
+    volumes:
+      - ./../configs/loki-config.yaml:/etc/loki/local-config.yaml
+    ports:
+      - "3100:3100"
+    networks:
+      - infrastructure
+
+  #######################################################
+  #  Visualization: Logs (Kibana)
+  #######################################################
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.16.0
+    container_name: kibana
+    restart: unless-stopped
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - SERVER_NAME=kibana
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
+    networks:
+      - infrastructure
+
+  #######################################################
+  #  Storage: Elasticsearch (for Kibana)
+  #######################################################
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.16.0
+    container_name: elasticsearch
+    restart: unless-stopped
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+    ports:
+      - "9200:9200"
+    networks:
+      - infrastructure
+
+  #######################################################
+  #  Visualization: Grafana
+  #######################################################
+  grafana:
+    image: grafana/grafana:11.4.0
+    container_name: grafana
+    restart: unless-stopped
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_FEATURE_TOGGLES_ENABLE=traceqlEditor
+    depends_on:
+      - prometheus
+      - tempo
+      - loki
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./../configs/grafana/provisioning:/etc/grafana/provisioning
+      - ./../configs/grafana/dashboards:/var/lib/grafana/dashboards
+    networks:
+      - infrastructure
+
+volumes:
+  postgres_data:
+
+networks:
+  infrastructure:
+    driver: bridge
