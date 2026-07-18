@@ -13,6 +13,7 @@ using Microsoft.Extensions.Hosting;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
+using OpenTelemetry.Logs;
 
 namespace Catalog.Extensions.Infrastructure;
 
@@ -41,6 +42,10 @@ public static class InfrastructureExtensions
         var serviceVersion = Assembly.GetEntryAssembly()?
             .GetName().Version?.ToString() ?? "1.0.0";
 
+        // Export metrics every 10s so Prometheus rate() queries work
+        builder.Services.Configure<MetricReaderOptions>(o =>
+            o.PeriodicExportingMetricReaderOptions.ExportIntervalMilliseconds = 10_000);
+
         builder.Services.AddOpenTelemetry()
             .ConfigureResource(resource => resource
                 .AddService(
@@ -59,6 +64,9 @@ public static class InfrastructureExtensions
                 .AddAspNetCoreInstrumentation()
                 .AddHttpClientInstrumentation()
                 .AddRuntimeInstrumentation()
+                .AddOtlpExporter()
+            )
+            .WithLogging(logging => logging
                 .AddOtlpExporter()
             );
 
@@ -85,8 +93,13 @@ public static class InfrastructureExtensions
 
     public static WebApplication UseInfrastructure(this WebApplication app)
     {
+        // Auto-create database schema in development
         if (app.Environment.IsDevelopment())
         {
+            using var scope = app.Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<CatalogDbContext>();
+            db.Database.EnsureCreated();
+
             app.UseSwagger();
             app.UseSwaggerUI();
         }

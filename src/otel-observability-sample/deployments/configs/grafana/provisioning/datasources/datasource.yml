@@ -6,7 +6,7 @@ datasources:
     url: http://prometheus:9090
     isDefault: true
     editable: false
-    uid: prometheus-uid
+    uid: DS_PROMETHEUS
 
   - name: Tempo
     type: tempo
@@ -17,7 +17,7 @@ datasources:
     jsonData:
       httpMethod: GET
       serviceMap:
-        datasourceUid: prometheus-uid
+        datasourceUid: DS_PROMETHEUS
       streamingEnabled:
         search: true
 

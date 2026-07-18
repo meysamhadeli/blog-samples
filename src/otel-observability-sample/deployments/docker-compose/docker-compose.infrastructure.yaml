@@ -12,54 +12,9 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-      - POSTGRES_MULTIPLE_DATABASES=catalogdb,orderdb
+      - POSTGRES_DB=catalogdb
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./../configs/init-db.sh:/docker-entrypoint-initdb.d/init-db.sh
-    networks:
-      - infrastructure
-
-  #######################################################
-  #  App Services: Catalog API
-  #######################################################
-  catalog-api:
-    build:
-      context: ../../
-      dockerfile: Catalog.Api/Dockerfile
-    container_name: catalog-api
-    restart: unless-stopped
-    ports:
-      - "5000:5000"
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:5000
-      - ConnectionStrings__CatalogDb=Host=postgres;Port=5432;Database=catalogdb;Username=postgres;Password=postgres
-      - OpenTelemetry__OtlpExporter__Endpoint=http://otel-collector:4317
-    depends_on:
-      - postgres
-      - otel-collector
-    networks:
-      - infrastructure
-
-  #######################################################
-  #  App Services: Order API
-  #######################################################
-  order-api:
-    build:
-      context: ../../
-      dockerfile: Order.Api/Dockerfile
-    container_name: order-api
-    restart: unless-stopped
-    ports:
-      - "5002:5002"
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:5002
-      - ConnectionStrings__OrderDb=Host=postgres;Port=5432;Database=orderdb;Username=postgres;Password=postgres
-      - OpenTelemetry__OtlpExporter__Endpoint=http://otel-collector:4317
-    depends_on:
-      - postgres
-      - otel-collector
     networks:
       - infrastructure
 
@@ -162,6 +117,8 @@ services:
       - ES_JAVA_OPTS=-Xms512m -Xmx512m
     ports:
       - "9200:9200"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
     networks:
       - infrastructure
 
@@ -190,6 +147,7 @@ services:
 
 volumes:
   postgres_data:
+  elasticsearch_data:
 
 networks:
   infrastructure:
