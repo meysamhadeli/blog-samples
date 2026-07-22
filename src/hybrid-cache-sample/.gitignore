@@ -436,3 +436,45 @@ fabric.properties
 *.jwk
 
 **/keys
+
+# IMAGE FILES - Copilot cannot process these
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.svg
+*.webp
+*.ico
+*.bmp
+*.tiff
+*.psd
+*.ai
+*.eps
+*.raw
+
+# BINARY FILES (any file that's not text)
+*.exe
+*.dll
+*.so
+*.dylib
+*.bin
+*.dat
+*.zip
+*.tar
+*.gz
+*.rar
+*.7z
+
+# MEDIA FILES
+*.mp4
+*.avi
+*.mov
+*.wmv
+*.flv
+*.mkv
+*.webm
+*.mp3
+*.wav
+*.flac
+*.aac
+*.ogg
