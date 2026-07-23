@@ -1,10 +1,22 @@
-namespace Order.Models;
+namespace Order.Products.Models;
 
-public sealed class ImportedProduct
+public class ImportedProduct
 {
-    public Guid Id { get; set; }
-    public string Name { get; set; } = string.Empty;
-    public decimal Price { get; set; }
-    public int Stock { get; set; }
-    public Guid SourceMessageId { get; set; }
+    private ImportedProduct() { }
+    public Guid Id { get; private set; }
+    public string Name { get; private set; } = string.Empty;
+    public decimal Price { get; private set; }
+    public int Stock { get; private set; }
+    public DateTime CreatedAtUtc { get; private set; }
+
+    public static ImportedProduct Create(Guid id, string name, decimal price, int stock, DateTime createdAtUtc)
+        => new() { Id = id, Name = name, Price = price, Stock = stock, CreatedAtUtc = createdAtUtc };
+
+    public void Update(string name, decimal price, int stock, DateTime createdAtUtc)
+    {
+        Name = name;
+        Price = price;
+        Stock = stock;
+        CreatedAtUtc = createdAtUtc;
+    }
 }

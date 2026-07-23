@@ -1,0 +1,37 @@
+<Solution>
+  <Folder Name="/src/" />
+  <Folder Name="/src/Aspire/">
+    <Project Path="src/Aspire/ECommerce.AppHost/ECommerce.AppHost.csproj" />
+    <Project Path="src/Aspire/ECommerce.ServiceDefaults/ECommerce.ServiceDefaults.csproj" />
+  </Folder>
+  <Folder Name="/src/BuildingBlocks/">
+    <Project Path="src/BuildingBlocks/BuildingBlocks.Integration.Wolverine/BuildingBlocks.Integration.Wolverine.csproj" />
+  </Folder>
+  <Folder Name="/src/Services/" />
+  <Folder Name="/src/Services/Catalog/">
+    <Project Path="src/Services/Catalog/Catalog/Catalog.csproj" />
+    <Project Path="src/Services/Catalog/Catalog.Api/Catalog.Api.csproj" />
+  </Folder>
+  <Folder Name="/src/Services/Order/">
+    <Project Path="src/Services/Order/Order/Order.csproj" />
+    <Project Path="src/Services/Order/Order.Api/Order.Api.csproj" />
+  </Folder>
+  <Folder Name="/src/Shared/">
+    <Project Path="src/Shared/Contracts/Contracts.csproj" />
+  </Folder>
+  <Folder Name="/tests/" />
+  <Folder Name="/tests/Services/" />
+  <Folder Name="/tests/Services/Catalog/">
+    <Project Path="tests/Services/Catalog/Catalog.IntegrationTests/Catalog.IntegrationTests.csproj" />
+    <Project Path="tests/Services/Catalog/Catalog.UnitTests/Catalog.UnitTests.csproj" />
+    <Project Path="tests/Services/Catalog/Catalog.TestShared/Catalog.TestShared.csproj" />
+  </Folder>
+  <Folder Name="/tests/Services/Order/">
+    <Project Path="tests/Services/Order/Order.IntegrationTests/Order.IntegrationTests.csproj" />
+    <Project Path="tests/Services/Order/Order.UnitTests/Order.UnitTests.csproj" />
+    <Project Path="tests/Services/Order/Order.TestShared/Order.TestShared.csproj" />
+  </Folder>
+  <Folder Name="/tests/Shared/">
+    <Project Path="tests/Shared/Tests.Shared/Tests.Shared.csproj" />
+  </Folder>
+</Solution>

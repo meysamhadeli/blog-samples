@@ -16,7 +16,7 @@ builder.Services.Configure<JsonOptions>(options =>
 
 var app = builder.Build();
 if (app.Environment.IsDevelopment()) app.MapOpenApi();
-app.MapGet("/", () => Results.Ok(new { service = CatalogsMetadata.ModuleName, status = "running" }));
+app.MapGet("/", () => Results.Ok(new { service = nameof(CatalogModule), status = "running" }));
 app.MapApplicationEndpoints();
 app.MapDefaultEndpoints();
 app.Run();

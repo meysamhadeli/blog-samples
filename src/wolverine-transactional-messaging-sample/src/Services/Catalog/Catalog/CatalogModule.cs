@@ -1,71 +1,43 @@
-using Catalog.Data;
-using Catalog.Models;
-using Contracts;
-using Wolverine;
+using BuildingBlocks.Integration.Wolverine;
+using BuildingBlocks.Integration.Wolverine.Configuration;
+using Catalog.Products.Features.CreatingProduct.v1;
+using Catalog.Products.Features.GettingProduct.v1;
+using Catalog.Shared.Extensions.HostApplicationBuilderExtensions;
+using MediatR;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Catalog;
 
-public sealed class CatalogService
+public static class CatalogModule
 {
-    private readonly CatalogWriteStore _writeStore;
-    private readonly CatalogReadStore _readStore;
-    private readonly IMessageBus _messageBus;
-
-    public CatalogService(CatalogWriteStore writeStore, CatalogReadStore readStore, IMessageBus messageBus)
+    public static void AddApplicationServices(this WebApplicationBuilder builder)
     {
-        _writeStore = writeStore;
-        _readStore = readStore;
-        _messageBus = messageBus;
-    }
+        builder.AddCatalogsStorage();
 
-    public async Task<CreateProductResult> CreateProductAsync(CreateProductRequest request, CancellationToken cancellationToken = default)
-    {
-        var product = new Product
+        var transport = builder.Configuration.GetMessagingTransport();
+
+        // Register MediatR handlers (replaces Wolverine handler discovery
+        // for internal commands like ProjectProductReadModel).
+        builder.Services.AddMediatR(cfg =>
+            cfg.RegisterServicesFromAssembly(typeof(CatalogModule).Assembly));
+
+        // Single unified entry point for all Wolverine + messaging config.
+        // Wolverine is used for transport only (RabbitMQ publish/subscribe).
+        builder.AddTransactionalWolverine(transport, cfg =>
         {
-            Id = Guid.NewGuid(),
-            Name = request.Name,
-            Price = request.Price,
-            Stock = request.Stock
-        };
-
-        await _writeStore.AddAsync(product, cancellationToken);
-
-        var integrationEvent = MessageEnvelope<ProductCreatedV1>.Create(
-            new ProductCreatedV1(product.Id, product.Name, product.Price, product.Stock),
-            request.CorrelationId);
-
-        await ProjectReadModelAsync(new ProjectProductReadModel(product.Id), cancellationToken);
-        await _messageBus.PublishAsync(integrationEvent);
-
-        return new CreateProductResult(product.Id, integrationEvent);
+            // Auto-discover integration events and wire RabbitMQ publishing.
+            // Module prefix derived from assembly name: "Catalog" → "catalog"
+            cfg.ScanIntegrationEvents(typeof(CatalogModule).Assembly);
+        });
     }
 
-    public async Task ProjectReadModelAsync(ProjectProductReadModel command, CancellationToken cancellationToken = default)
+    public static void MapApplicationEndpoints(this IEndpointRouteBuilder endpoints)
     {
-        var product = await _writeStore.FindAsync(command.ProductId, cancellationToken)
-            ?? throw new InvalidOperationException($"Product '{command.ProductId}' not found.");
-
-        await _readStore.UpsertAsync(new ProductReadModel
-        {
-            Id = product.Id,
-            Name = product.Name,
-            Price = product.Price,
-            Stock = product.Stock,
-            SyncedAt = DateTime.UtcNow
-        }, cancellationToken);
-    }
-
-    public Task<Product?> GetProductAsync(Guid id, CancellationToken cancellationToken = default)
-    {
-        return _writeStore.FindAsync(id, cancellationToken);
-    }
-
-    public Task<ProductReadModel?> GetReadModelAsync(Guid id, CancellationToken cancellationToken = default)
-    {
-        return _readStore.FindAsync(id, cancellationToken);
+        var group = endpoints.MapGroup("/api/v1/catalogs");
+        group.MapCreateProductEndpoint();
+        group.MapGetProductEndpoint();
     }
 }
-
-public sealed record CreateProductRequest(string Name, decimal Price, int Stock, string? CorrelationId);
-
-public sealed record CreateProductResult(Guid ProductId, MessageEnvelope<ProductCreatedV1> IntegrationEvent);

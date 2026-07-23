@@ -1,11 +1,17 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="WolverineFx.EntityFrameworkCore" Version="6.21.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.4"><PrivateAssets>all</PrivateAssets></PackageReference>
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.3" />
+    <PackageReference Include="MediatR" Version="14.2.0" />
     <ProjectReference Include="..\..\..\Shared\Contracts\Contracts.csproj" />
-    <PackageReference Include="WolverineFx" Version="6.19.0" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Integration.Wolverine\BuildingBlocks.Integration.Wolverine.csproj" />
   </ItemGroup>
 </Project>

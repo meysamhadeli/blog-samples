@@ -13,6 +13,5 @@ public class CatalogsDbContext(DbContextOptions<CatalogsDbContext> options) : Db
     {
         base.OnModelCreating(modelBuilder);
         modelBuilder.AddTransactionalOutboxEntities();
-        modelBuilder.AddDurableLocalQueueEntities();
     }
 }

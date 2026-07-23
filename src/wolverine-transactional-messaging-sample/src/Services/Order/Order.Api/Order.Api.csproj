@@ -1,13 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.0-rc.1.25451.107" />
+    <PackageReference Include="WolverineFx.RuntimeCompilation" Version="6.21.0" />
     <ProjectReference Include="..\Order\Order.csproj" />
-    <PackageReference Include="WolverineFx" Version="6.19.0" />
-    <PackageReference Include="WolverineFx.Kafka" Version="6.19.0" />
-    <PackageReference Include="WolverineFx.RabbitMQ" Version="6.19.0" />
+    <ProjectReference Include="..\..\..\Aspire\ECommerce.ServiceDefaults\ECommerce.ServiceDefaults.csproj" />
   </ItemGroup>
 </Project>

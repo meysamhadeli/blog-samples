@@ -1,61 +1,23 @@
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Catalog;
-using Catalog.Data;
-using Contracts;
-using Wolverine;
-using Wolverine.Kafka;
-using Wolverine.RabbitMQ;
+using Microsoft.AspNetCore.Http.Json;
 
 var builder = WebApplication.CreateBuilder(args);
-var messaging = builder.Configuration.GetSection("Messaging").Get<MessagingOptions>() ?? new MessagingOptions();
-var transport = MessagingTransport.Normalize(messaging.Transport);
-
-builder.Host.UseWolverine(opts =>
+builder.AddServiceDefaults();
+builder.AddApplicationServices();
+builder.Services.AddOpenApi();
+builder.Services.Configure<JsonOptions>(options =>
 {
-    switch (transport)
-    {
-        case MessagingTransport.RabbitMq:
-            opts.UseRabbitMq(new Uri("amqp://guest:guest@localhost:5672"));
-            opts.PublishMessage<MessageEnvelope<ProductCreatedV1>>().ToRabbitQueue("catalog-products-created");
-            break;
-
-        case MessagingTransport.Kafka:
-            opts.UseKafka("localhost:9092").AutoProvision();
-            opts.PublishMessage<MessageEnvelope<ProductCreatedV1>>().ToKafkaTopic("catalog-products-created");
-            break;
-    }
+    options.SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+    options.SerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+    options.SerializerOptions.PropertyNameCaseInsensitive = true;
 });
-
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSingleton<CatalogWriteStore>();
-builder.Services.AddSingleton<CatalogReadStore>();
-builder.Services.AddScoped<CatalogService>();
-builder.Services.AddSingleton(new MessagingOptions { Transport = transport });
 
 var app = builder.Build();
-
-app.MapPost("/api/v1/catalogs/products", async (CreateProductRequestDto request, CatalogService service, CancellationToken cancellationToken) =>
-{
-    var result = await service.CreateProductAsync(
-        new CreateProductRequest(request.Name, request.Price, request.Stock, request.CorrelationId),
-        cancellationToken);
-
-    return Results.Accepted($"/api/v1/catalogs/products/{result.ProductId}", result);
-});
-
-app.MapGet("/api/v1/catalogs/products/{id:guid}", async (Guid id, CatalogService service, CancellationToken cancellationToken) =>
-{
-    var product = await service.GetProductAsync(id, cancellationToken);
-    return product is null ? Results.NotFound() : Results.Ok(product);
-});
-
-app.MapGet("/api/v1/catalogs/products/read-model/{id:guid}", async (Guid id, CatalogService service, CancellationToken cancellationToken) =>
-{
-    var product = await service.GetReadModelAsync(id, cancellationToken);
-    return product is null ? Results.NotFound() : Results.Ok(product);
-});
-
+if (app.Environment.IsDevelopment()) app.MapOpenApi();
+app.MapGet("/", () => Results.Ok(new { service = nameof(CatalogModule), status = "running" }));
+app.MapApplicationEndpoints();
+app.MapDefaultEndpoints();
 app.Run();
-
-public sealed record CreateProductRequestDto(string Name, decimal Price, int Stock, string? CorrelationId);
-
 public partial class Program;

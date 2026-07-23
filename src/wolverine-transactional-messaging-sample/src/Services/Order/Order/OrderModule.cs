@@ -1,50 +1,45 @@
-using Contracts;
-using Order.Data;
-using Order.Models;
+using BuildingBlocks.Integration.Wolverine;
+using BuildingBlocks.Integration.Wolverine.Configuration;
+using Contracts.Messages.Constants;
+using Contracts.Messages.ProductCreated;
+using MediatR;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Order.Products.Features.ConsumingProductCreated.v1;
+using Order.Shared.Extensions.HostApplicationBuilderExtensions;
 
 namespace Order;
 
-public sealed class OrderImportService
+public static class OrderModule
 {
-    private readonly OrderImportStore _importStore;
-    private readonly InboxStore _inboxStore;
-
-    public OrderImportService(OrderImportStore importStore, InboxStore inboxStore)
+    public static void AddApplicationServices(this WebApplicationBuilder builder)
     {
-        _importStore = importStore;
-        _inboxStore = inboxStore;
-    }
+        builder.AddOrdersStorage();
 
-    public async Task<bool> ImportAsync(MessageEnvelope<ProductCreatedV1> message, CancellationToken cancellationToken = default)
-    {
-        if (!_inboxStore.TryBegin(message.MessageId))
+        var transport = builder.Configuration.GetMessagingTransport();
+
+        // Register MediatR handlers (for integration event processing).
+        builder.Services.AddMediatR(cfg =>
+            cfg.RegisterServicesFromAssembly(typeof(OrderModule).Assembly));
+
+        // Single unified entry point for all Wolverine + messaging config.
+        // Wolverine is used for transport only (RabbitMQ pub/sub).
+        builder.AddTransactionalWolverine(transport, cfg =>
         {
-            return false;
-        }
+            // Auto-discover integration events and wire RabbitMQ listening.
+            // Prefix must match Catalog publisher's convention: "{prefix}-*"
+            cfg.ListenToIntegrationEvents(MessagingConstants.ModulePrefixes.Catalog, typeof(ProductCreatedV1).Assembly);
 
-        await _importStore.UpsertAsync(new ImportedProduct
-        {
-            Id = message.Data.ProductId,
-            Name = message.Data.Name,
-            Price = message.Data.Price,
-            Stock = message.Data.Stock,
-            SourceMessageId = message.MessageId
-        }, cancellationToken);
-
-        return true;
+            // Register thin Wolverine bridge consumers that forward to MediatR.
+            cfg.ScanHandlers(typeof(OrderModule).Assembly);
+        });
     }
 
-    public Task<ImportedProduct?> GetProductAsync(Guid id, CancellationToken cancellationToken = default)
+    public static void MapApplicationEndpoints(this IEndpointRouteBuilder endpoints)
     {
-        return _importStore.FindAsync(id, cancellationToken);
-    }
-
-}
-
-public static class ProductCreatedHandler
-{
-    public static Task Handle(MessageEnvelope<ProductCreatedV1> message, OrderImportService service, CancellationToken cancellationToken)
-    {
-        return service.ImportAsync(message, cancellationToken);
+        var group = endpoints.MapGroup("/api/v1/orders");
+        group.MapReceiveProductCreatedEndpoint();
     }
 }

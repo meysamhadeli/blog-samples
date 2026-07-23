@@ -1,0 +1,40 @@
+using ECommerce.Services.Catalogs.Products.Features.ProjectingProductReadModel.v1;
+using ECommerce.Services.Catalogs.Shared.Contracts;
+using ECommerce.Services.Catalogs.Shared.ReadModels;
+using Moq;
+
+namespace ECommerce.Services.Catalogs.UnitTests;
+
+public class ProjectProductReadModelHandlerTests
+{
+    [Fact]
+    public async Task Handle_ShouldUpsertReadModel()
+    {
+        var repository = new Mock<IProductReadRepository>();
+        var handler = new ProjectProductReadModelHandler(repository.Object);
+        var command =
+            new ECommerce.Services.Shared.Contracts.InternalCommands.ProjectProductReadModel(
+                Tests.Shared.SampleData.ProductId,
+                "Starter Basket",
+                42.50m,
+                25,
+                Tests.Shared.SampleData.CreatedAtUtc
+            );
+
+        await handler.Handle(command, CancellationToken.None);
+
+        repository.Verify(
+            x =>
+                x.UpsertAsync(
+                    It.Is<ProductReadModel>(m =>
+                        m.Id == command.ProductId
+                        && m.Stock == command.Stock
+                        && m.Name == command.Name
+                        && m.Price == command.Price
+                    ),
+                    CancellationToken.None
+                ),
+            Times.Once
+        );
+    }
+}

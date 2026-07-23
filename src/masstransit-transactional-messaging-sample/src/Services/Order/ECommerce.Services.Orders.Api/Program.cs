@@ -16,7 +16,7 @@ builder.Services.Configure<JsonOptions>(options =>
 
 var app = builder.Build();
 if (app.Environment.IsDevelopment()) app.MapOpenApi();
-app.MapGet("/", () => Results.Ok(new { service = OrdersMetadata.ModuleName, status = "running" }));
+app.MapGet("/", () => Results.Ok(new { service = nameof(OrderModule), status = "running" }));
 app.MapApplicationEndpoints();
 app.MapDefaultEndpoints();
 app.Run();

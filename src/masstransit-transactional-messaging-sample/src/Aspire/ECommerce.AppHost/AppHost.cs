@@ -1,9 +1,9 @@
 const string PostgresImage = "postgres";
 const string PostgresTag = "17";
 const string MongoImage = "mongo";
-const string MongoTag = "8.0";
+const string MongoTag = "7.0";
 const string RabbitMqImage = "rabbitmq";
-const string RabbitMqTag = "4-management";
+const string RabbitMqTag = "3.13-management";
 const string KafkaImage = "confluentinc/cp-kafka";
 const string KafkaTag = "7.5.12";
 

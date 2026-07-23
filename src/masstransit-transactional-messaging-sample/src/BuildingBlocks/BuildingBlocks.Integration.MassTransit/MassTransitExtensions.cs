@@ -5,10 +5,8 @@ using BuildingBlocks.Integration.MassTransit.Configuration;
 using BuildingBlocks.Integration.MassTransit.Options;
 using MassTransit;
 using MassTransit.KafkaIntegration;
-using MassTransit.Mediator;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 
 namespace BuildingBlocks.Integration.MassTransit;
@@ -43,7 +41,6 @@ public class TransactionalMassTransitConfigurator<TDbContext>
     private readonly IHostEnvironment? _environment;
 
     private Action<IBusRegistrationConfigurator>? _configureBus;
-    private Action<IMediatorRegistrationConfigurator>? _configureMediator;
     private Action<IServiceCollection>? _configureServices;
 
     // RabbitMQ-specific
@@ -53,10 +50,6 @@ public class TransactionalMassTransitConfigurator<TDbContext>
     private Action<IRiderRegistrationConfigurator>? _configureKafkaRider;
     private Action<IRiderRegistrationContext, IKafkaFactoryConfigurator>? _configureKafkaTransport;
     private Action<IServiceCollection>? _configureKafkaPublisher;
-
-    // Durable internal commands
-    private bool _useDurableInternalCommands;
-    private DurableCommandProcessorOptions? _durableOptions;
 
     internal TransactionalMassTransitConfigurator(
         MassTransitOptions options,
@@ -118,37 +111,6 @@ public class TransactionalMassTransitConfigurator<TDbContext>
     public TransactionalMassTransitConfigurator<TDbContext> ConfigureServices(Action<IServiceCollection> configure)
     {
         _configureServices += configure;
-        return this;
-    }
-
-    /// <summary>Use durable local queue for internal command processing (replaces mediator-based IInternalCommandBus).</summary>
-    public TransactionalMassTransitConfigurator<TDbContext> UseDurableInternalCommands(
-        Action<DurableCommandProcessorOptions>? configure = null)
-    {
-        _useDurableInternalCommands = true;
-        _durableOptions = new DurableCommandProcessorOptions();
-        configure?.Invoke(_durableOptions);
-        return this;
-    }
-
-    /// <summary>Register a handler for a durable internal command.</summary>
-    public TransactionalMassTransitConfigurator<TDbContext> RegisterDurableHandler<TCommand>(
-        Func<TCommand, IServiceProvider, CancellationToken, Task> handler)
-        where TCommand : class, IInternalCommand
-    {
-        DurableCommandHandlerRegistry.Register(handler);
-        return this;
-    }
-
-    /// <summary>
-    /// Scan assemblies for <see cref="IInternalCommandHandler{T}"/> implementations
-    /// and auto-register them as durable command handlers. Handlers are resolved
-    /// from DI at dispatch time.
-    /// </summary>
-    public TransactionalMassTransitConfigurator<TDbContext> ScanDurableHandlers(
-        params Assembly[] assemblies)
-    {
-        DurableHandlerScanner.ScanAndRegister(_services, assemblies);
         return this;
     }
 
@@ -275,26 +237,12 @@ public class TransactionalMassTransitConfigurator<TDbContext>
 
     internal IServiceCollection Apply()
     {
-        if (_options.Bus.UsePostCommitMediator)
-            _services.AddMediator(x => _configureMediator?.Invoke(x));
-
         ApplyTransport();
 
-        if (_options.Bus.UseEnvelopePublisher)
-            _services.AddScoped<IMassTransitMessagePublisher, MassTransitEnvelopePublisher>();
-        else
-            _services.AddScoped<IMassTransitMessagePublisher, MassTransitPublishEndpointPublisher>();
+        _services.AddScoped<IMassTransitMessagePublisher, MassTransitEnvelopePublisher>();
 
         _services.AddScoped<IEventBus, MassTransitEventBus>();
         _services.AddScoped<IInternalCommandBus, MassTransitInternalCommandBus>();
-
-        if (_useDurableInternalCommands)
-        {
-            _services.AddSingleton(_durableOptions!);
-            _services.Replace(ServiceDescriptor.Scoped<IInternalCommandBus, DurableInternalCommandBus<TDbContext>>());
-            _services.AddSingleton<DurableCommandProcessor<TDbContext>>();
-            _services.AddHostedService(sp => sp.GetRequiredService<DurableCommandProcessor<TDbContext>>());
-        }
 
         _configureServices?.Invoke(_services);
         return _services;
