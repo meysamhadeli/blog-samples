@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="AgentHarness.Api/AgentHarness.Api.csproj" />
+  <Project Path="AgentHarness/AgentHarness.csproj" />
+  <Project Path="tests/AgentHarness.UnitTests/AgentHarness.UnitTests.csproj" />
+  <Project Path="tests/AgentHarness.IntegrationTests/AgentHarness.IntegrationTests.csproj" />
+  <Project Path="tests/Shared/Tests.Shared/Tests.Shared.csproj" />
+</Solution>
