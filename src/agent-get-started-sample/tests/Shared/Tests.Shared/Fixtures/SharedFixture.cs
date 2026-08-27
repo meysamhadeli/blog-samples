@@ -1,5 +1,4 @@
 using Tests.Shared.Factory;
-using Xunit;
 
 namespace Tests.Shared.Fixtures;
 
@@ -23,11 +22,9 @@ public abstract class SharedFixture<TEntryPoint> : IAsyncLifetime
 
     public virtual ValueTask DisposeAsync() => Factory.DisposeAsync();
 
-    public string RequireDeepSeekApiKey()
+    protected void RequireDeepSeekApiKey()
     {
         if (string.IsNullOrWhiteSpace(_deepSeekApiKey))
             Assert.Skip("DS_KEY is required for the live DeepSeek integration test.");
-
-        return _deepSeekApiKey!;
     }
 }

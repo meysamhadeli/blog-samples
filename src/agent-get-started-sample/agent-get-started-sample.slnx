@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="AgentGetStarted.Api/AgentGetStarted.Api.csproj" />
+  <Project Path="AgentGetStarted/AgentGetStarted.csproj" />
+  <Project Path="tests/AgentGetStarted.UnitTests/AgentGetStarted.UnitTests.csproj" />
+  <Project Path="tests/AgentGetStarted.IntegrationTests/AgentGetStarted.IntegrationTests.csproj" />
+  <Project Path="tests/Shared/Tests.Shared/Tests.Shared.csproj" />
+</Solution>

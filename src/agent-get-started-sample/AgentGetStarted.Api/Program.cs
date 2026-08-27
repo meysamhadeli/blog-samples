@@ -1,8 +1,8 @@
-using AgentHarness;
+using AgentGetStarted;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddSingleton<AgentRuntime>(services =>
+builder.Services.AddSingleton<IAgentRunner>(services =>
 {
     var configuration = services.GetRequiredService<IConfiguration>();
     var apiKey = Environment.GetEnvironmentVariable("DS_KEY")
@@ -17,25 +17,20 @@ var app = builder.Build();
 
 app.MapPost("api/agent/chat", async (
     ChatRequest request,
-    IServiceProvider services,
+    IAgentRunner agent,
     CancellationToken cancellationToken) =>
 {
     if (string.IsNullOrWhiteSpace(request.Prompt))
         return Results.BadRequest("Prompt is required.");
 
-    var runtime = services.GetRequiredService<AgentRuntime>();
-    var sessionId = string.IsNullOrWhiteSpace(request.SessionId)
-        ? Guid.NewGuid().ToString("N")
-        : request.SessionId;
-    var response = await runtime.RunAsync(sessionId, request.Prompt, cancellationToken);
-
-    return Results.Ok(new ChatResponse(sessionId, response));
+    var response = await agent.RunAsync(request.Prompt, cancellationToken);
+    return Results.Ok(new ChatResponse(response));
 });
 
 app.Run();
 
-public record ChatRequest(string? SessionId, string Prompt);
+public record ChatRequest(string? Prompt);
 
-public record ChatResponse(string SessionId, string Response);
+public record ChatResponse(string Response);
 
 public partial class Program;

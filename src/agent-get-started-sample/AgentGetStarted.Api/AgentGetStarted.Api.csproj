@@ -1,12 +1,10 @@
-<Project>
+<Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <IsPackable>false</IsPackable>
-    <XunitVersion>3.2.2</XunitVersion>
   </PropertyGroup>
   <ItemGroup>
-    <Using Include="Xunit" />
+    <ProjectReference Include="..\AgentGetStarted\AgentGetStarted.csproj" />
   </ItemGroup>
 </Project>
