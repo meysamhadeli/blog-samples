@@ -26,7 +26,7 @@ curl -X POST http://localhost:5000/api/agent/chat \
 Run unit and API integration tests:
 
 ```bash
-dotnet test agent-get-started-sample.slnx
+dotnet test --solution agent-get-started-sample.slnx --no-restore
 ```
 
-The API integration tests replace the model runner with a fake, so request validation and HTTP behavior do not require credentials. The live-provider fixture automatically checks `DS_KEY` during setup and skips its test when the key is unavailable. The live test hosts the API in-process and verifies that the real agent returns non-empty output.
+The API integration tests host the API in-process and use the real DeepSeek agent. The shared fixture requires `DS_KEY`, and tests verify request validation plus a non-empty response from the live provider.
