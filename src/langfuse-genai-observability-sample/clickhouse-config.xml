@@ -1,0 +1,5 @@
+<clickhouse>
+    <remote_servers>
+        <!-- no clusters - prevents ReplicatedMergeTree usage -->
+    </remote_servers>
+</clickhouse>
