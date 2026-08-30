@@ -1,0 +1,30 @@
+<main>
+  <section class="hero">
+    <p class="eyebrow">Keycloak lab / code flow + PKCE</p>
+    <h1>Good things, securely delivered.</h1>
+    <p class="lede">A protected product shelf powered by Angular, Keycloak, and .NET 10.</p>
+    <div class="status"><span class="dot"></span>Signed in as <strong>{{ username }}</strong></div>
+    <div class="actions">
+      <button class="primary" type="button" (click)="loadProducts()" [disabled]="loading">{{ loading ? 'Loading products...' : 'Refresh products' }}</button>
+      <button class="secondary" type="button" (click)="logout()">Log out</button>
+    </div>
+    @if (products.length) {
+      <section class="catalog" aria-label="Products">
+        <div class="result-header"><span>200 OK</span><small>GET /api/v1/catalogs/products</small></div>
+        <div class="product-grid">
+          @for (product of products; track product.id) {
+            <article class="product">
+              <div class="product-topline"><span>{{ product.category }}</span><strong>${{ product.price | number: '1.2-2' }}</strong></div>
+              <h2>{{ product.name }}</h2>
+              <p>{{ product.description }}</p>
+              <small>{{ product.stock }} in stock</small>
+            </article>
+          }
+        </div>
+      </section>
+    }
+    @if (error) {
+      <article class="error"><strong>Request rejected</strong><span>{{ error }}</span></article>
+    }
+  </section>
+</main>

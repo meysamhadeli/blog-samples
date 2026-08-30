@@ -1,0 +1,25 @@
+:host { display: block; }
+main { min-height: 100vh; padding: 8vh 8vw; background: #f4f0e8; }
+.hero { max-width: 760px; margin: 0 auto; }
+.eyebrow { color: #bd4b32; font: 700 0.75rem/1.2 'Courier New', monospace; letter-spacing: 0.08em; text-transform: uppercase; }
+h1 { max-width: 700px; margin: 1rem 0; color: #202522; font: 700 clamp(3rem, 8vw, 6.5rem)/0.92 Georgia, serif; letter-spacing: 0; }
+.lede { max-width: 530px; color: #59615c; font: 1.2rem/1.5 'Trebuchet MS', sans-serif; }
+.status { display: inline-flex; gap: 0.55rem; align-items: center; margin: 2rem 0 1.5rem; padding: 0.65rem 0.9rem; background: #ded8ca; color: #3d4741; font: 0.9rem 'Courier New', monospace; }
+.dot { width: 0.55rem; height: 0.55rem; border-radius: 50%; background: #3d8b68; }
+.actions { display: flex; flex-wrap: wrap; gap: 0.8rem; }
+button { border: 0; padding: 0.9rem 1.25rem; cursor: pointer; font: 700 0.9rem 'Trebuchet MS', sans-serif; }
+button:disabled { cursor: wait; opacity: 0.6; }
+.primary { background: #bd4b32; color: white; }
+.secondary { background: #202522; color: white; }
+.catalog, .error { margin-top: 2.5rem; padding: 1rem 1.25rem; border-left: 4px solid #3d8b68; background: #fffdf8; box-shadow: 0 10px 28px #514a3c1a; }
+.result-header { display: flex; justify-content: space-between; gap: 1rem; color: #3d8b68; font: 700 0.8rem 'Courier New', monospace; }
+.result-header small { color: #737a74; font-weight: 400; }
+.product-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin-top: 1rem; }
+.product { min-height: 190px; padding: 1.1rem; border: 1px solid #ded8ca; background: #f8f4eb; }
+.product-topline { display: flex; justify-content: space-between; gap: 1rem; color: #bd4b32; font: 700 0.78rem 'Courier New', monospace; text-transform: uppercase; }
+.product h2 { margin: 1.5rem 0 0.55rem; color: #202522; font: 700 1.35rem Georgia, serif; }
+.product p { margin: 0 0 1.1rem; color: #59615c; font: 0.95rem/1.45 'Trebuchet MS', sans-serif; }
+.product > small { color: #737a74; font: 0.78rem 'Courier New', monospace; }
+.error { display: flex; flex-direction: column; gap: 0.35rem; border-left-color: #bd4b32; color: #bd4b32; font-family: 'Trebuchet MS', sans-serif; }
+.error span { color: #59615c; }
+@media (max-width: 600px) { main { padding: 3rem 1.25rem; } h1 { font-size: 3.8rem; } .product-grid { grid-template-columns: 1fr; } }

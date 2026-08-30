@@ -1,0 +1,61 @@
+{
+  "realm": "implicit-demo",
+  "enabled": true,
+  "displayName": "Implicit Demo",
+  "accessTokenLifespan": 300,
+  "registrationAllowed": false,
+  "sslRequired": "NONE",
+  "clients": [
+    {
+      "clientId": "implicit-client",
+      "name": "Implicit Angular Client",
+      "enabled": true,
+      "publicClient": true,
+      "protocol": "openid-connect",
+      "redirectUris": ["http://localhost:3000/*"],
+      "webOrigins": ["http://localhost:3000"],
+      "implicitFlowEnabled": false,
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "protocolMappers": [
+        {
+          "name": "api-introspection audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "config": {
+            "included.client.audience": "api-introspection",
+            "access.token.claim": "true",
+            "id.token.claim": "false"
+          }
+        }
+      ]
+    },
+    {
+      "clientId": "api-introspection",
+      "name": "Backend Introspection Client",
+      "enabled": true,
+      "publicClient": false,
+      "secret": "api-introspection-demo-secret",
+      "protocol": "openid-connect",
+      "serviceAccountsEnabled": true,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false
+    }
+  ],
+  "users": [
+    {
+      "username": "demo",
+      "enabled": true,
+      "email": "demo@example.local",
+      "firstName": "Demo",
+      "lastName": "User",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "demo-password",
+          "temporary": false
+        }
+      ]
+    }
+  ]
+}

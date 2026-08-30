@@ -1,0 +1,2 @@
+
+curl --location 'http://localhost:5001/api/v1/catalogs/products' --header 'Authorization: Bearer ACCESS_TOKEN'
