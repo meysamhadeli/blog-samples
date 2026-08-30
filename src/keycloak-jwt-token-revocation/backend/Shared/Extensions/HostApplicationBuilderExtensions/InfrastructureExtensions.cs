@@ -7,7 +7,7 @@ public static class InfrastructureExtensions
 {
     public static void AddBackendInfrastructure(this WebApplicationBuilder builder)
     {
-        builder.AddJwtAuthentication();
+        builder.AddJwtAuthenticationWithIntrospection();
         builder.Services.AddAuthorization();
         builder.Services.AddCors(options => options.AddPolicy("frontend", policy =>
             policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));

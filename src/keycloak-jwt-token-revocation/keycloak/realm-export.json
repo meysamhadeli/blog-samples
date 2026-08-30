@@ -1,20 +1,19 @@
 {
-  "realm": "implicit-demo",
+  "realm": "demo",
   "enabled": true,
-  "displayName": "Implicit Demo",
+  "displayName": "Demo",
   "accessTokenLifespan": 300,
   "registrationAllowed": false,
   "sslRequired": "NONE",
   "clients": [
     {
-      "clientId": "implicit-client",
-      "name": "Implicit Angular Client",
+      "clientId": "code-flow-client",
+      "name": "Angular Code Flow Client",
       "enabled": true,
       "publicClient": true,
       "protocol": "openid-connect",
       "redirectUris": ["http://localhost:3000/*"],
       "webOrigins": ["http://localhost:3000"],
-      "implicitFlowEnabled": false,
       "standardFlowEnabled": true,
       "directAccessGrantsEnabled": false,
       "protocolMappers": [

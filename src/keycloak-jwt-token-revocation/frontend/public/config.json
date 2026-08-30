@@ -1,6 +1,6 @@
 {
   "apiUrl": "http://localhost:5001",
   "keycloakUrl": "http://localhost:8080",
-  "keycloakRealm": "implicit-demo",
-  "keycloakClientId": "implicit-client"
+  "keycloakRealm": "demo",
+  "keycloakClientId": "code-flow-client"
 }

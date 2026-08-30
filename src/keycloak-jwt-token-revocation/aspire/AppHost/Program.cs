@@ -25,7 +25,7 @@ var backend = builder.AddProject<Projects.Products_Api>("backend-api")
     .WithHttpEndpoint(port: 5001, name: "http")
     .WithHttpsEndpoint(port: 5000, name: "https")
     .WithEnvironment("ASPNETCORE_ENVIRONMENT", "Development")
-    .WithEnvironment("Keycloak__Authority", "http://localhost:8080/realms/implicit-demo")
+    .WithEnvironment("Keycloak__Authority", "http://localhost:8080/realms/demo")
     .WithEnvironment("Keycloak__IntrospectionClientId", "api-introspection")
     .WithEnvironment("Keycloak__IntrospectionClientSecret", "api-introspection-demo-secret")
     .WaitFor(keycloak);
