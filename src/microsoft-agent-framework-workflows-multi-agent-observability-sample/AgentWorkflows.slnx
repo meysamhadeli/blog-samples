@@ -1,0 +1,8 @@
+<Solution>
+  <Project Path="src/AgentWorkflows/AgentWorkflows.csproj" />
+  <Project Path="src/AgentWorkflows.Api/AgentWorkflows.Api.csproj" />
+  <Project Path="src/Aspire/AgentWorkflows.AppHost/AgentWorkflows.AppHost.csproj" />
+  <Project Path="tests/AgentWorkflows.UnitTests/AgentWorkflows.UnitTests.csproj" />
+  <Project Path="tests/AgentWorkflows.IntegrationTests/AgentWorkflows.IntegrationTests.csproj" />
+  <Project Path="tests/Shared/Tests.Shared/Tests.Shared.csproj" />
+</Solution>

@@ -1,0 +1,53 @@
+{
+  "uid": "agent-workflows",
+  "title": "Agent Workflows / Live Operations",
+  "schemaVersion": 39,
+  "version": 1,
+  "links": [
+    { "title": "ASP.NET Core Metrics", "type": "link", "url": "/d/aspnetcore/asp-net-core" },
+    { "title": "ASP.NET Core Endpoint Metrics", "type": "link", "url": "/d/aspnetcore-endpoint/asp-net-core-endpoint" }
+  ],
+  "refresh": "5s",
+  "time": { "from": "now-15m", "to": "now" },
+  "templating": { "list": [] },
+  "panels": [
+    {
+      "type": "stat",
+      "title": "Workflow Runs",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 5, "w": 8, "x": 0, "y": 0 },
+      "targets": [{ "expr": "sum(agent_workflow_runs_total)", "refId": "A" }]
+    },
+    {
+      "type": "timeseries",
+      "title": "Workflow Duration (ms)",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 8, "w": 16, "x": 8, "y": 0 },
+      "targets": [{ "expr": "sum(agent_workflow_duration_milliseconds_sum) / clamp_min(sum(agent_workflow_duration_milliseconds_count), 1)", "legendFormat": "average", "refId": "A" }]
+    },
+    {
+      "type": "timeseries",
+      "title": "HTTP Requests",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 5 },
+      "targets": [{ "expr": "sum(http_server_request_duration_seconds_count)", "legendFormat": "requests", "refId": "A" }]
+    },
+    {
+      "type": "logs",
+      "title": "Workflow Logs",
+      "datasource": { "type": "loki", "uid": "loki" },
+      "gridPos": { "h": 10, "w": 16, "x": 0, "y": 13 },
+      "targets": [{ "expr": "{service_name=~\".+\"} |= `Support workflow`", "refId": "A" }],
+      "options": { "showTime": true, "showLabels": true, "showCommonLabels": false, "wrapLines": true, "prettifyLogMessage": true, "enableLogDetails": true }
+    },
+    {
+      "type": "text",
+      "title": "Workflow Traces",
+      "gridPos": { "h": 10, "w": 8, "x": 16, "y": 13 },
+      "options": {
+        "mode": "markdown",
+        "content": "### Tempo traces\n\nTrace IDs are visible in the Loki panel. Open [Tempo search](http://localhost:3200/api/search?limit=20) to inspect the complete workflow spans.\n\nLatest live trace: `8bdeb9889b988a072b16d6df372b302c`\n\n[Open Tempo](http://localhost:3200)"
+      }
+    }
+  ]
+}

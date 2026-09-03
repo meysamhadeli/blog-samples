@@ -1,0 +1,46 @@
+name: agent-workflows-observability
+services:
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.116.1
+    command: ["--config=/etc/otelcol-contrib/config.yaml"]
+    volumes:
+      - ./../config/otel-collector-config.yaml:/etc/otelcol-contrib/config.yaml
+    ports: ["14317:4317", "14318:4318", "13133:13133"]
+    depends_on: [tempo, loki]
+  tempo:
+    image: grafana/tempo:2.7.0
+    command: ["-config.file=/etc/tempo.yaml"]
+    volumes:
+      - ./../config/tempo.yaml:/etc/tempo.yaml
+      - tempo_data:/var/tempo
+    ports: ["3200:3200"]
+  loki:
+    image: grafana/loki:3.3.2
+    user: "0"
+    command: ["-config.file=/etc/loki/local-config.yaml"]
+    volumes:
+      - ./../config/loki-config.yaml:/etc/loki/local-config.yaml
+      - loki_data:/tmp/loki
+    ports: ["3100:3100"]
+  grafana:
+    image: grafana/grafana:11.4.0
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    volumes:
+      - ./../config/grafana:/etc/grafana/provisioning
+      - grafana_data:/var/lib/grafana
+    ports: ["3000:3000"]
+    depends_on: [tempo, loki]
+  prometheus:
+    image: prom/prometheus:v3.1.0
+    command: ["--config.file=/etc/prometheus/prometheus.yml", "--web.enable-remote-write-receiver"]
+    volumes:
+      - ./../config/prometheus.yaml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    ports: ["9090:9090"]
+volumes:
+  tempo_data:
+  loki_data:
+  grafana_data:
+  prometheus_data:

@@ -4,12 +4,14 @@ This sample exposes a small HTTP API backed by a Microsoft Agent Framework `AIAg
 
 ## Run
 
-Set the `DS_KEY` environment variable, then run the API:
+Set the `DS_KEY` environment variable, then run the sample with Aspire:
 
 ```powershell
 $env:DS_KEY = "<your-deepseek-api-key>"
-dotnet run --project src/AgentGetStarted.Api
+dotnet run --project src/Aspire/AgentGetStarted.AppHost
 ```
+
+Aspire starts the API at `http://localhost:5000`. You can also run the API directly with `dotnet run --project src/AgentGetStarted.Api`.
 
 The sample uses DeepSeek's OpenAI-compatible endpoint (`https://api.deepseek.com`) and `deepseek-v4-flash` by default. Change `DeepSeek:Endpoint` and `DeepSeek:Model` when using another compatible deployment.
 

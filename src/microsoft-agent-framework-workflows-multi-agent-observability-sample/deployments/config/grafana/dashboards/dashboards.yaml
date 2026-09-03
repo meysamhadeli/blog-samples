@@ -1,0 +1,10 @@
+apiVersion: 1
+providers:
+  - name: Agent Workflows
+    orgId: 1
+    folder: Agent Workflows
+    type: file
+    disableDeletion: true
+    allowUiUpdates: true
+    options:
+      path: /etc/grafana/provisioning/dashboards
