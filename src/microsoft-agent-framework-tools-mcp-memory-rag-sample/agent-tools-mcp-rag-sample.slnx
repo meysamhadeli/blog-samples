@@ -1,4 +1,5 @@
 <Solution>
+  <Project Path="src/Aspire/AgentTools.AppHost/AgentTools.AppHost.csproj" />
   <Project Path="AgentTools.Api/AgentTools.Api.csproj" />
   <Project Path="AgentTools/AgentTools.csproj" />
   <Project Path="tests/AgentTools.UnitTests/AgentTools.UnitTests.csproj" />
