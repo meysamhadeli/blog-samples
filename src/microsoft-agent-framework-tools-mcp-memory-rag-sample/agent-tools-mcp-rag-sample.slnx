@@ -1,9 +1,9 @@
 <Solution>
   <Project Path="src/Aspire/AgentTools.AppHost/AgentTools.AppHost.csproj" />
-  <Project Path="AgentTools.Api/AgentTools.Api.csproj" />
-  <Project Path="AgentTools/AgentTools.csproj" />
+  <Project Path="src/AgentTools.Api/AgentTools.Api.csproj" />
+  <Project Path="src/AgentTools/AgentTools.csproj" />
   <Project Path="tests/AgentTools.UnitTests/AgentTools.UnitTests.csproj" />
-  <Project Path="SupportMcpServer/SupportMcpServer.csproj" />
+  <Project Path="src/SupportMcpServer/SupportMcpServer.csproj" />
   <Project Path="tests/AgentTools.IntegrationTests/AgentTools.IntegrationTests.csproj" />
   <Project Path="tests/Shared/Tests.Shared/Tests.Shared.csproj" />
 </Solution>

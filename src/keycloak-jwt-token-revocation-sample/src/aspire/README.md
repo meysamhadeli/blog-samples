@@ -3,7 +3,7 @@
 Start Keycloak, backend API, and Angular frontend together:
 
 ```powershell
-dotnet run --project aspire/AppHost/AppHost.csproj
+dotnet run --project src/aspire/AppHost/AppHost.csproj
 ```
 
 Requirements:

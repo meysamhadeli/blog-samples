@@ -5,7 +5,7 @@
     <UseMicrosoftTestingPlatformRunner>true</UseMicrosoftTestingPlatformRunner>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\AgentGetStarted.Api\AgentGetStarted.Api.csproj" />
+    <ProjectReference Include="..\..\src\AgentGetStarted.Api\AgentGetStarted.Api.csproj" />
     <ProjectReference Include="..\Shared\Tests.Shared\Tests.Shared.csproj" />
   </ItemGroup>
   <ItemGroup>

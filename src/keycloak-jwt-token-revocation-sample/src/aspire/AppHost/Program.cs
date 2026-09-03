@@ -7,7 +7,7 @@ var postgres = builder.AddPostgres("postgres", postgresUser, postgresPassword)
     .WithDataVolume("keycloak-postgres-data-v2");
 var keycloakDatabase = postgres.AddDatabase("keycloakdb");
 var realmImportPath = Path.GetFullPath(Path.Combine(
-    builder.Environment.ContentRootPath, "..", "..", "keycloak", "realm-export.json"));
+    builder.Environment.ContentRootPath, "..", "..", "..", "keycloak", "realm-export.json"));
 
 var keycloak = builder.AddContainer("keycloak", "quay.io/keycloak/keycloak", "26.7.2")
     .WithHttpEndpoint(port: 8080, targetPort: 8080, name: "http")
@@ -30,7 +30,7 @@ var backend = builder.AddProject<Projects.Products_Api>("backend-api")
     .WithEnvironment("Keycloak__IntrospectionClientSecret", "api-introspection-demo-secret")
     .WaitFor(keycloak);
 
-builder.AddExecutable("frontend", @"C:\Program Files\nodejs\node.exe", "../../frontend")
+builder.AddExecutable("frontend", @"C:\Program Files\nodejs\node.exe", "../../../frontend")
     .WithArgs(@"C:\Program Files\nodejs\node_modules\npm\bin\npm-cli.js", "start", "--", "--port", "4200")
     .WithHttpEndpoint(port: 3000, targetPort: 4200, name: "http")
     .WithEnvironment("NODE_ENV", "development")

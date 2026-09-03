@@ -65,12 +65,16 @@ public sealed class AgentRuntime : IAgentRunner
             var directory = new DirectoryInfo(start);
             while (directory is not null)
             {
-                var candidate = Path.Combine(
-                    directory.FullName,
-                    "SupportMcpServer",
-                    "SupportMcpServer.csproj");
-                if (File.Exists(candidate))
-                    return candidate;
+                foreach (var relativePath in new[]
+                         {
+                             Path.Combine("SupportMcpServer", "SupportMcpServer.csproj"),
+                             Path.Combine("src", "SupportMcpServer", "SupportMcpServer.csproj")
+                         })
+                {
+                    var candidate = Path.Combine(directory.FullName, relativePath);
+                    if (File.Exists(candidate))
+                        return candidate;
+                }
 
                 directory = directory.Parent;
             }

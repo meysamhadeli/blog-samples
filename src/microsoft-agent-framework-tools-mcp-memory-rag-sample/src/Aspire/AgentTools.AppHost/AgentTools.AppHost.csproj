@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\AgentTools.Api\AgentTools.Api.csproj" />
+    <ProjectReference Include="..\..\AgentTools.Api\AgentTools.Api.csproj" />
     <PackageReference Include="Aspire.Hosting" Version="13.4.6" />
   </ItemGroup>
 </Project>

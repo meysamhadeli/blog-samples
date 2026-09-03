@@ -33,7 +33,7 @@ builder
     .WithEnvironment("EMBEDDING_MODEL", EmbeddingModel)
     .WithEnvironment(
         "MCP_SERVER_PROJECT",
-        Path.GetFullPath(Path.Combine(builder.Environment.ContentRootPath, "..", "..", "..", "SupportMcpServer", "SupportMcpServer.csproj")))
+        Path.GetFullPath(Path.Combine(builder.Environment.ContentRootPath, "..", "..", "SupportMcpServer", "SupportMcpServer.csproj")))
     .WaitFor(qdrant)
     .WaitForCompletion(modelInit);
 

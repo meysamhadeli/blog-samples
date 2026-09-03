@@ -8,7 +8,7 @@ Set the `DS_KEY` environment variable, then run the API:
 
 ```powershell
 $env:DS_KEY = "<your-deepseek-api-key>"
-dotnet run --project AgentGetStarted.Api
+dotnet run --project src/AgentGetStarted.Api
 ```
 
 The sample uses DeepSeek's OpenAI-compatible endpoint (`https://api.deepseek.com`) and `deepseek-v4-flash` by default. Change `DeepSeek:Endpoint` and `DeepSeek:Model` when using another compatible deployment.
